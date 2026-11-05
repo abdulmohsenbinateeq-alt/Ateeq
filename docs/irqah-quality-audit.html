@@ -1,0 +1,621 @@
+<title>Irqah Hospital Quality Audit</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Kalam:wght@700&family=Noto+Kufi+Arabic:wght@700&display=swap">
+<style>
+/* Layout: one hospital case file. A single reading column; findings sit on bolted enamel plates; wide tables scroll in their own frame.
+   Light theme = the brand's "paper" theme (documents). Dark theme = the brand's "night" theme. */
+:root {
+  --ground: #EFEBE4;
+  --plate: #E4DCCD;
+  --plate-raised: #D9C4A8;
+  --text: #0E0D0C;
+  --muted: #5E4D3C;
+  --structure: #0E0D0C;
+  --line: #7A6650;
+  --hairline: #CFC4B4;
+  --alarm: #7E1611;
+  --on-alarm: #EFEBE4;
+  --exit: #175A39;
+  --money: #5E4600;
+  --focus: #0E0D0C;
+  --bolt: #7A6650;
+
+  --f-ar: "Aref Ruqaa", "Noto Naskh Arabic", serif;
+  --f-display: "Kalam", "IBM Plex Sans Condensed", cursive;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-label: "IBM Plex Sans Condensed", "IBM Plex Sans", system-ui, sans-serif;
+  --f-stamp: "Noto Kufi Arabic", "IBM Plex Sans Condensed", system-ui, sans-serif;
+
+  --s-1: 0.25rem; --s-2: 0.5rem; --s-3: 0.75rem; --s-4: 1rem; --s-5: 1.5rem; --s-6: 2rem; --s-7: 3rem; --s-8: 4.5rem;
+  --t-xs: 0.78rem; --t-sm: 0.875rem; --t-md: 1rem; --t-lg: 1.2rem; --t-xl: 1.6rem; --t-2xl: 2.4rem; --t-3xl: clamp(2.6rem, 7vw, 4.4rem);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #0E0D0C; --plate: #171512; --plate-raised: #2C2823; --text: #EFEBE4; --muted: #A29A8F;
+    --structure: #B39A7E; --line: #8C7A66; --hairline: #2E2924; --alarm: #C4321F; --on-alarm: #EFEBE4;
+    --exit: #58BD8A; --money: #EBC53B; --focus: #FFF5D9; --bolt: #6B5946;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #0E0D0C; --plate: #171512; --plate-raised: #2C2823; --text: #EFEBE4; --muted: #A29A8F;
+  --structure: #B39A7E; --line: #8C7A66; --hairline: #2E2924; --alarm: #C4321F; --on-alarm: #EFEBE4;
+  --exit: #58BD8A; --money: #EBC53B; --focus: #FFF5D9; --bolt: #6B5946;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--ground);
+  color: var(--text);
+  font-family: var(--f-body);
+  font-size: var(--t-md);
+  line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.file { max-width: 60rem; margin: 0 auto; padding-block: var(--s-7) var(--s-8); display: grid; gap: var(--s-8); }
+.prose { max-width: 68ch; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+a { color: inherit; text-decoration-color: var(--line); text-underline-offset: 3px; }
+a:hover { text-decoration-color: var(--text); }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+strong { font-weight: 600; }
+.ar { font-family: var(--f-ar); direction: rtl; unicode-bidi: isolate; }
+
+/* Labels */
+.label { font-family: var(--f-label); font-weight: 600; font-size: var(--t-xs); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+/* Header */
+header.cover { display: grid; gap: var(--s-5); }
+.cover-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--s-3); border-bottom: 2px solid var(--structure); padding-bottom: var(--s-3); }
+.title-ar { font-family: var(--f-ar); font-size: var(--t-3xl); line-height: 1.2; direction: rtl; }
+.title-en { font-family: var(--f-display); font-size: var(--t-2xl); text-transform: uppercase; line-height: 1; letter-spacing: 0.02em; }
+.titles { display: grid; gap: var(--s-2); }
+.verdict { display: grid; grid-template-columns: 1fr auto; gap: var(--s-5); align-items: start; }
+.verdict p { font-size: var(--t-lg); line-height: 1.55; max-width: 62ch; }
+.stamp {
+  font-family: var(--f-stamp); font-weight: 700; color: var(--structure);
+  border: 3px solid var(--structure); outline: 1px solid var(--structure); outline-offset: 3px;
+  padding: var(--s-2) var(--s-4); transform: rotate(-4deg); text-align: center; line-height: 1.3;
+  margin-top: var(--s-3); white-space: nowrap;
+}
+.stamp .big { display: block; font-size: var(--t-xl); }
+.stamp .small { display: block; font-family: var(--f-label); font-size: var(--t-xs); letter-spacing: 0.12em; }
+@media (max-width: 560px) { .verdict { grid-template-columns: 1fr; } .stamp { justify-self: start; } }
+
+.note { border-left: 3px solid var(--line); padding: var(--s-2) var(--s-4); color: var(--muted); font-size: var(--t-sm); max-width: 68ch; }
+[dir="rtl"] .note { border-left: 0; border-right: 3px solid var(--line); }
+
+nav.index { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-5); font-family: var(--f-label); font-weight: 500; font-size: var(--t-sm); }
+nav.index a { text-decoration: none; border-bottom: 1px solid var(--line); }
+nav.index a:hover { border-bottom-color: var(--text); }
+
+/* Sections */
+section { display: grid; gap: var(--s-5); }
+.sec-head { display: grid; gap: var(--s-2); border-top: 1px solid var(--line); padding-top: var(--s-4); }
+.sec-head h2 { font-family: var(--f-label); font-weight: 600; font-size: var(--t-xl); line-height: 1.25; }
+.sec-head p { color: var(--muted); max-width: 68ch; }
+
+/* Fact sheet */
+dl.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: var(--s-4) var(--s-6); margin: 0; }
+dl.facts div { display: grid; gap: var(--s-1); border-top: 1px solid var(--hairline); padding-top: var(--s-3); min-width: 0; }
+dl.facts dt { font-family: var(--f-label); font-weight: 600; font-size: var(--t-xs); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+dl.facts dd { margin: 0; font-size: var(--t-sm); }
+.num { font-variant-numeric: tabular-nums; }
+
+/* Tables */
+.table-frame { overflow-x: auto; border-top: 2px solid var(--structure); border-bottom: 1px solid var(--line); }
+table { border-collapse: collapse; width: 100%; min-width: 46rem; font-size: var(--t-sm); }
+th, td { text-align: left; vertical-align: top; padding: var(--s-3) var(--s-3); border-bottom: 1px solid var(--hairline); }
+th { font-family: var(--f-label); font-weight: 600; font-size: var(--t-xs); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+td:first-child { font-weight: 600; white-space: nowrap; }
+td .sub { display: block; font-weight: 400; color: var(--muted); font-size: var(--t-xs); white-space: normal; }
+tbody tr:last-child td { border-bottom: 0; }
+.cap { font-size: var(--t-xs); color: var(--muted); }
+
+/* Patterns */
+ol.patterns { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--s-4); counter-reset: p; max-width: 68ch; }
+ol.patterns li { display: grid; grid-template-columns: 2rem 1fr; gap: var(--s-3); counter-increment: p; }
+ol.patterns li::before { content: counter(p); font-family: var(--f-display); font-size: var(--t-xl); line-height: 1.1; color: var(--structure); }
+
+.callout { background: var(--plate); padding: var(--s-5); display: grid; gap: var(--s-2); max-width: 68ch; }
+.callout h3 { font-family: var(--f-label); font-weight: 600; font-size: var(--t-lg); }
+
+/* Findings: bolted plates */
+.findings { display: grid; gap: var(--s-6); }
+.plate { position: relative; background: var(--plate); border: 1px solid var(--line); padding: var(--s-6) var(--s-5) var(--s-5); display: grid; gap: var(--s-4); }
+.plate::before, .plate::after { content: ""; position: absolute; top: 10px; width: 8px; height: 8px; border-radius: 50%; background: var(--bolt); box-shadow: inset 0 -1px 0 rgba(0,0,0,.35); }
+.plate::before { left: 10px; } .plate::after { right: 10px; }
+.plate-head { display: grid; grid-template-columns: auto 1fr; gap: var(--s-4); align-items: baseline; }
+.plate-no { font-family: var(--f-display); font-size: var(--t-2xl); line-height: 1; color: var(--structure); font-variant-numeric: tabular-nums; }
+.plate-head h3 { font-family: var(--f-label); font-weight: 600; font-size: var(--t-xl); line-height: 1.2; }
+.chips { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-2); }
+.chip { font-family: var(--f-label); font-weight: 600; font-size: var(--t-xs); letter-spacing: 0.06em; text-transform: uppercase; padding: 2px var(--s-2); border: 1px solid var(--line); border-radius: 2px; color: var(--muted); }
+.chip.alarm { background: var(--alarm); border-color: var(--alarm); color: var(--on-alarm); }
+.cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-5); }
+@media (max-width: 820px) { .cols { grid-template-columns: 1fr; } }
+.col { display: grid; gap: var(--s-2); align-content: start; min-width: 0; font-size: var(--t-sm); }
+.col h4 { margin: 0; font-family: var(--f-label); font-weight: 600; font-size: var(--t-xs); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding-bottom: var(--s-1); border-bottom: 1px solid var(--hairline); }
+.col.fix h4 { color: var(--exit); border-bottom-color: var(--exit); }
+.col ul { margin: 0; padding-left: 1.1rem; display: grid; gap: var(--s-2); }
+.col q { font-style: italic; }
+code { font-family: var(--f-label); font-size: 0.92em; background: var(--plate-raised); padding: 0 4px; }
+
+/* Plan */
+ol.weeks { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--s-5); }
+ol.weeks li { display: grid; grid-template-columns: 7.5rem 1fr; gap: var(--s-4); border-top: 1px solid var(--hairline); padding-top: var(--s-4); }
+@media (max-width: 560px) { ol.weeks li { grid-template-columns: 1fr; gap: var(--s-2); } }
+.wk { font-family: var(--f-display); font-size: var(--t-lg); line-height: 1.2; color: var(--structure); }
+.wk span { display: block; font-family: var(--f-label); font-size: var(--t-xs); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+ol.weeks h3 { font-family: var(--f-label); font-weight: 600; font-size: var(--t-lg); margin-bottom: var(--s-2); }
+ol.weeks ul { margin: 0; padding-left: 1.1rem; display: grid; gap: var(--s-1); font-size: var(--t-sm); max-width: 68ch; }
+.done-when { margin-top: var(--s-2); font-size: var(--t-sm); }
+.done-when b { color: var(--exit); font-family: var(--f-label); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; font-size: var(--t-xs); margin-right: var(--s-1); }
+
+ul.plain { margin: 0; padding-left: 1.1rem; display: grid; gap: var(--s-2); max-width: 68ch; }
+
+/* Sources */
+details.sources { border-top: 1px solid var(--line); padding-top: var(--s-4); }
+details.sources summary { cursor: pointer; font-family: var(--f-label); font-weight: 600; font-size: var(--t-lg); }
+.src-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: var(--s-5); margin-top: var(--s-5); }
+.src-groups div { min-width: 0; }
+.src-groups h3 { font-family: var(--f-label); font-weight: 600; font-size: var(--t-xs); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: var(--s-2); }
+.src-groups ul { margin: 0; padding-left: 1rem; display: grid; gap: var(--s-1); font-size: var(--t-xs); }
+.src-groups a { overflow-wrap: anywhere; }
+
+footer { font-size: var(--t-xs); color: var(--muted); border-top: 2px solid var(--structure); padding-top: var(--s-3); display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--s-2); }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="file">
+
+<header class="cover">
+  <div class="cover-top">
+    <span class="label">Case file IH-AUD-01 &middot; Visual quality &middot; 5 November 2026</span>
+    <span class="label">Prepared for Ateeq</span>
+  </div>
+  <div class="titles">
+    <div class="title-ar" lang="ar">مستشفى عرقة</div>
+    <h1 class="title-en">Quality audit</h1>
+  </div>
+  <div class="verdict">
+    <p>Ateeq, the tools are not the main problem. Three things are. The game has no single locked look. The map is built by code at runtime, so its lighting can never be baked. And AI is doing the two jobs it is worst at: placing furniture and judging what looks good. The well-reviewed games on Steam that use AI keep art direction, hero assets and lighting in human hands, and use AI where players don't look closely.</p>
+    <div class="stamp" aria-hidden="true"><span class="big" lang="ar">تم الفحص</span><span class="small">AUDITED</span></div>
+  </div>
+  <p class="note">How this was made: I read your GDD on Drive, the Irqah design system, and the transcripts of your past Irqah sessions (main dev, asset packages, Higgsfield setup, branding, learning). Ten research agents covered released games, tools and studies, and a fact-check pass tested the key claims. I have not seen your screenshots or played a build, so findings about the look come from what the sessions recorded. Send me 5 to 10 current screenshots and I can add a frame-by-frame critique.</p>
+  <nav class="index" aria-label="Sections">
+    <a href="#now">Where the game is today</a>
+    <a href="#benchmarks">Benchmarks</a>
+    <a href="#findings">What's holding the look back</a>
+    <a href="#missing">What's missing</a>
+    <a href="#plan">The next 4 weeks</a>
+    <a href="#risk">Steam and AI risk</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</header>
+
+<section id="now" aria-labelledby="now-h">
+  <div class="sec-head">
+    <span class="label">Section A</span>
+    <h2 id="now-h">Where the game is today</h2>
+    <p>Pulled from your session transcripts and memory notes. These are the facts the findings below are built on.</p>
+  </div>
+  <dl class="facts">
+    <div><dt>Engine</dt><dd>Unity 6000.4.10f1, URP 17.4, Forward+. FishNet and Steamworks. Target: GTX 1070 at 1080p/60 on High.</dd></div>
+    <div><dt>Style on paper</dt><dd>GDD &sect;9: stylized low-poly, PS2-era texture crunch. Changed to "realistic" on 10-24. The brand system says "found inside that building at night".</dd></div>
+    <div><dt>World shader</dt><dd>Custom <code>PSXLit</code> on <span class="num">169</span> world materials. Bought props on a separate <code>PSXPropLit</code> shader with a global dirt layer at "Heavy" (<span class="num">1.35</span>).</dd></div>
+    <div><dt>Map</dt><dd>Generated by code every time the game starts, from your locked layout (IH-MAP-01 Rev D). <span class="num">2,110</span> furniture pieces on the ground floor, placed from JSON written by an AI placer.</dd></div>
+    <div><dt>Lighting</dt><dd>Realtime lamp rig, SSAO, HDR, fog, dust motes. No lightmaps, light probes or reflection probes were seen in any session.</dd></div>
+    <div><dt>Environment assets</dt><dd><span class="num">159</span> paid Fab items (SAR <span class="num">2,151</span>) plus <span class="num">80</span> free Megascans, and 4 Asset Store packs (<span class="num">$369</span>). Mainly Dekogon and DmitriyDryzhak. <span class="num">12.7</span> GB.</dd></div>
+    <div><dt>Monsters and players</dt><dd>Tripo AI meshes on the game-mobile preset, Mixamo rigs. Every animation keyed by a Python walk-cycle script because retargeting broke.</dd></div>
+    <div><dt>Who judges the look</dt><dd>Claude, from 1280&times;720 tour screenshots with critic subagents. Codex, Kimi and Gemini also touch shaders, kits and placement, with you passing prompts between them through Dropbox.</dd></div>
+    <div><dt>Iteration speed</dt><dd><span class="num">77%</span> of dev time spent waiting. One map check takes <span class="num">52.7</span> minutes. A rebuild plus smoke test takes about <span class="num">20</span>.</dd></div>
+  </dl>
+</section>
+
+<section id="benchmarks" aria-labelledby="bench-h">
+  <div class="sec-head">
+    <span class="label">Section B</span>
+    <h2 id="bench-h">Benchmarks: well-made games that used AI, and the hits in your genre</h2>
+    <p>Released, well-reviewed games on Steam, not mobile or web games. Review figures are dated snapshots from trackers and press, because Steam pages could not be opened directly from this session.</p>
+  </div>
+
+  <div class="table-frame" tabindex="0" role="region" aria-label="Games that used AI or machine learning">
+    <table>
+      <thead><tr><th>Game</th><th>Reception</th><th>Team and engine</th><th>What AI did</th><th>What stayed human</th><th>Lesson for Irqah</th></tr></thead>
+      <tbody>
+        <tr><td>ARC Raiders<span class="sub">Embark, Oct 2025. Extraction, your closest commercial match</span></td><td class="num">Very Positive, about 82&ndash;88% of 240k&ndash;430k reviews. 12.4M sold by Jan 2026</td><td>Large studio. Modified UE5 branch without Lumen or Nanite</td><td>Text-to-speech voices trained on contracted actors. Machine learning for robot movement</td><td>All visual art, built on photogrammetry and strong art direction</td><td>AI went where it doesn't touch the look. The AI voices still cost them: Eurogamer gave 2/5, and Embark re-recorded some lines with actors</td></tr>
+        <tr><td>Clair Obscur: Expedition 33<span class="sub">Sandfall, Apr 2025</span></td><td>Overwhelmingly Positive. 3.3M sold in 33 days</td><td>About 30 core staff. UE5</td><td>A few AI placeholder textures shipped at launch and were patched out</td><td>All final art. Four artists textured it in Substance. Free Epic assets reworked into the house style</td><td>Strong direction applied to reworked stock assets beats raw generation. The shipped placeholders cost it two Indie Game Awards</td></tr>
+        <tr><td>MIMESIS<span class="sub">ReLU Games / Krafton, Oct 2025. 4-player co-op horror</span></td><td>Very Positive, about 84%. 2M+ sold</td><td>Krafton's deep-learning studio</td><td>The core mechanic: monsters that copy players' voices and behaviour</td><td>Not documented</td><td>AI as the gameplay hook sells in your genre. It also overlaps with your شمقمق idea (see the note under the findings)</td></tr>
+        <tr><td>Where Winds Meet<span class="sub">Everstone / NetEase, Nov 2025</span></td><td>Very Positive at launch</td><td>About 100 people. In-house engine</td><td>Labeled AI chatbot NPCs in side interactions</td><td>The whole world and its art</td><td>Labeled AI in side systems was accepted, but divisive</td></tr>
+        <tr><td>The Alters<span class="sub">11 bit studios, Jun 2025</span></td><td>Very Positive, about 90%</td><td>UE5</td><td>AI placeholder background text and AI subtitle translations, not disclosed</td><td>Everything else</td><td>The studio had to apologize. Disclose AI use, and replace placeholders before launch</td></tr>
+        <tr><td>Anno 117<span class="sub">Ubisoft Mainz, Nov 2025</span></td><td>Mixed on Steam</td><td>Large art team</td><td>"AI tools used to help create some assets"; an AI loading screen slipped through</td><td>Most art</td><td>One visible AI image overshadowed the series' best launch</td></tr>
+        <tr><td>CoD: Black Ops 7<span class="sub">Activision, Nov 2025</span></td><td>Mixed, about 42&ndash;45%</td><td>AAA</td><td>Calling-card art that looked AI-made</td><td>Core 3D art</td><td>Visible 2D AI art draws the worst reaction. Some players got Steam refunds</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-frame" tabindex="0" role="region" aria-label="Small-team genre hits">
+    <table>
+      <thead><tr><th>Genre hit</th><th>Reception</th><th>Team and engine</th><th>How they got the look</th></tr></thead>
+      <tbody>
+        <tr><td>Lethal Company</td><td class="num">About 97% of ~507k. Est. 10M sold by Jan 2024</td><td>Solo dev (Zeekerss), Unity HDRP</td><td>Renders at a low internal resolution (about 860&times;520), upscales, then adds posterization and edge lines. That one layer pulls simple assets into one image and keeps frame rates high. He made his own models and textures</td></tr>
+        <tr><td>R.E.P.O.</td><td>Overwhelmingly Positive</td><td>semiwork, under 10 people. Unity</td><td>Physics comedy and proximity voice. Levels assembled from hand-made room modules. Built to "fail quickly" after a six-year flop</td></tr>
+        <tr><td>Content Warning</td><td>About 96% early</td><td>Landfall, 5 devs, mostly built in a one-month jam</td><td>The found-footage camera is both the mechanic and the look. Tiny scope</td></tr>
+        <tr><td>PEAK</td><td>Very Positive. 2M sold in 9 days</td><td>Aggro Crab and Landfall, about 12 people, Unity, about a month</td><td>Expressive characters and physics, reusing proven co-op tech</td></tr>
+        <tr><td>Schedule I</td><td class="num">About 98% of ~204k</td><td>Solo dev, Unity</td><td>Simple low-poly art. Press called it "looks like trash" and it still hit Overwhelmingly Positive</td></tr>
+        <tr><td>Phasmophobia</td><td class="num">About 96% of ~597k (2024)</td><td>Started solo</td><td>Dark realism where the ghost is barely shown. Its publishing arm now refuses AI-generated games</td></tr>
+        <tr><td>Bodycam</td><td>Mostly Positive to Mixed</td><td>2 founders, UE5 with Megascans</td><td>Photoreal from scanned assets, yet reviews suffered when gameplay and servers were weak</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec-head" style="border-top:0;padding-top:0">
+    <h2 style="font-size:var(--t-lg)">What the good ones have in common</h2>
+  </div>
+  <ol class="patterns">
+    <li><p><strong>Hero visuals are made by people.</strong> AI sits where players don't look closely (ARC Raiders' robot movement) or AI is the mechanic itself (MIMESIS). None of them ships AI meshes as the face of the game.</p></li>
+    <li><p><strong>One consistent style beats asset detail.</strong> Lethal Company's low resolution, Schedule I's low poly and Clair Obscur's art direction all win because one look is applied to everything.</p></li>
+    <li><p><strong>The shortcut that works is library or scanned assets restyled by hand.</strong> ARC Raiders used photogrammetry, Bodycam used Megascans, and Clair Obscur reworked free Epic models.</p></li>
+    <li><p><strong>Visible AI art is punished.</strong> The worst reactions came from AI 2D art, AI voices, and AI placeholders that shipped by accident. Invisible AI (code, movement, tools) drew almost none.</p></li>
+    <li><p><strong>Your genre sells through clips of friends screaming, not fidelity.</strong> Your own GDD says graphics are not a success factor in this genre. The trailer needs a coherent, readable, scary world, not an AAA one.</p></li>
+  </ol>
+
+  <div class="callout">
+    <h3>High quality is not the same as high fidelity</h3>
+    <p>"Realistic" is the most expensive look there is, and it exposes every flaw in AI meshes, missing bounce light and placement. The small teams in your genre that look great picked a look they could finish and held it everywhere. You can still go grounded and dirty, but it needs the lighting and consistency work below to read as real instead of clean and fake.</p>
+  </div>
+</section>
+
+<section id="findings" aria-labelledby="find-h">
+  <div class="sec-head">
+    <span class="label">Section C</span>
+    <h2 id="find-h">What's holding the look back</h2>
+    <p>Ranked by how much each one drags down the image. Each plate shows what the sessions recorded, what the benchmarks or research do differently, and the fix.</p>
+  </div>
+
+  <div class="findings">
+
+    <article class="plate" aria-labelledby="f1">
+      <div class="plate-head">
+        <span class="plate-no">01</span>
+        <div>
+          <h3 id="f1">Four different looks in the same frame</h3>
+          <div class="chips"><span class="chip alarm">Highest impact</span><span class="chip">Root cause</span></div>
+        </div>
+      </div>
+      <div class="cols">
+        <div class="col"><h4>What I found</h4><ul>
+          <li>The GDD says stylized PS2-era low-poly. On 10-24 the direction became "realistic".</li>
+          <li>World materials still use the PSX shader, props are realistic Dekogon and Megascans pieces, and monsters are Tripo mobile-preset meshes.</li>
+          <li>The dev session was told to ignore the Branding session, which is the only place a complete visual identity exists.</li>
+          <li>About 20 versions shipped, with a direction change at almost every one. No art bible or reference board for the 3D look.</li>
+        </ul></div>
+        <div class="col"><h4>What the benchmarks do</h4><ul>
+          <li>Lethal Company, Schedule I and Clair Obscur each lock one look and apply it to every asset.</li>
+          <li>Clair Obscur took free stock models and reworked them into its own style rather than mixing sources as they came.</li>
+        </ul></div>
+        <div class="col fix"><h4>Fix</h4><ul>
+          <li>Before another asset goes in, write a one-page art bible: palette, light temperatures, materials, texel density, triangle budgets, and 8 reference frames from your real hospital photos.</li>
+          <li>My recommendation: grounded, dirty realism seen through the 2012 phone camera. That filter is already your default camera, and it is in your brand. It can do for you what low resolution does for Lethal Company and pull mismatched assets into one image.</li>
+          <li>Retire the PSX shaders and move everything in frame to URP Lit or one Lit Shader Graph.</li>
+        </ul></div>
+      </div>
+    </article>
+
+    <article class="plate" aria-labelledby="f2">
+      <div class="plate-head">
+        <span class="plate-no">02</span>
+        <div>
+          <h3 id="f2">Lighting that can never be baked</h3>
+          <div class="chips"><span class="chip alarm">Highest impact</span><span class="chip">Technical</span></div>
+        </div>
+      </div>
+      <div class="cols">
+        <div class="col"><h4>What I found</h4><ul>
+          <li>The hospital is built by code each time the game starts, so everything is lit live by the lamp rig.</li>
+          <li>No baked bounce light, light probes or reflection probes. The PSX shader may not read Unity's baked lighting at all.</li>
+          <li>Your own feedback matches the symptom: <q>very clean, not terrifying, not dirty</q>.</li>
+        </ul></div>
+        <div class="col"><h4>Why it matters</h4><ul>
+          <li>Bounce light, soft shadows in corners and reflections on wet floors are what make a realistic scene read as real. Without them it looks flat and clean.</li>
+          <li>Unity cannot bake lighting at runtime, and probe volumes only cover geometry that exists when you bake.</li>
+          <li>Lethal Company and R.E.P.O. get away with live lighting because they are dark and heavily stylized. A realistic look does not.</li>
+        </ul></div>
+        <div class="col fix"><h4>Fix</h4><ul>
+          <li>Your map layout is locked, so generate it once in the editor and save it as a normal scene. Bake lightmaps for walls, floors and ceilings, Adaptive Probe Volumes for props, players and monsters, and one reflection probe per room.</li>
+          <li>Set lamps to Mixed. Keep only 3 to 6 live shadow lights (flashlights, flickering hero lamps). Baked light is also cheaper per frame, which helps the GTX 1070 target.</li>
+          <li>Bake two lighting scenarios, power on and blackout, and blend between them. That is your breaker-room mechanic from the GDD, for free.</li>
+          <li>Add volumetric fog (free URP package) and a build check that fails if the map changes after the bake.</li>
+        </ul></div>
+      </div>
+    </article>
+
+    <article class="plate" aria-labelledby="f3">
+      <div class="plate-head">
+        <span class="plate-no">03</span>
+        <div>
+          <h3 id="f3">AI placing the furniture and judging the result</h3>
+          <div class="chips"><span class="chip alarm">High impact</span><span class="chip">Process</span></div>
+        </div>
+      </div>
+      <div class="cols">
+        <div class="col"><h4>What I found</h4><ul>
+          <li>An AI-written placer picks coordinates for 2,110 pieces. Earlier placement failed visual review three times.</li>
+          <li>The latest ground-floor sample: sofas in <q>a heap in the middle</q>, bare shelves, and furniture cleaner than the rooms around it.</li>
+          <li>Claude judges the look from 1280&times;720 stills.</li>
+        </ul></div>
+        <div class="col"><h4>What the research says</h4><ul>
+          <li>Layout studies (2024 to 2026) find that language models are poor at exact coordinates. The better systems let the model state relations ("against the wall, facing the door") and a solver does the placing.</li>
+          <li>In SceneCritic, a vision-model judge agreed with human ratings of room layouts only 47 to 59% of the time. A rule-based checker agreed 83 to 94%.</li>
+          <li>On SpatiaLab, the best model scored about 55% on spatial reasoning against about 88% for people.</li>
+        </ul></div>
+        <div class="col fix"><h4>Fix</h4><ul>
+          <li>Have a person dress 20 to 30 small "story" groups once and save them as prefabs: an overturned gurney, an IV pole, scattered files and a drag mark. Tag each by where it sits: wall, corner, doorway or centre.</li>
+          <li>Claude writes the code that places those groups with wall-snap rules, then checks them in code: floating, overlap, facing, door clearance.</li>
+          <li>Use screenshots only to catch obvious faults. You judge the look at 1080p, in motion.</li>
+        </ul></div>
+      </div>
+    </article>
+
+    <article class="plate" aria-labelledby="f4">
+      <div class="plate-head">
+        <span class="plate-no">04</span>
+        <div>
+          <h3 id="f4">Monsters are the cheapest-looking part, and the riskiest</h3>
+          <div class="chips"><span class="chip alarm">High impact</span><span class="chip">Characters</span></div>
+        </div>
+      </div>
+      <div class="cols">
+        <div class="col"><h4>What I found</h4><ul>
+          <li>Tripo meshes on the game-mobile preset, Mixamo rigs, and every animation keyed by a Python walk-cycle script.</li>
+          <li>The $1,067 set of bought replacement monsters and motion capture is still waiting on your call.</li>
+        </ul></div>
+        <div class="col"><h4>What the benchmarks do</h4><ul>
+          <li>No genre hit shows a realistic creature up close. Their monsters read through one silhouette, one behaviour and one sound.</li>
+          <li>Script-made walk cycles move every joint on one rhythm: no weight shift, no follow-through, sliding feet. That reads as cheap instantly.</li>
+          <li>The monster is the most visible AI content in a horror trailer, and visible AI art is what Steam players punish.</li>
+        </ul></div>
+        <div class="col fix"><h4>Fix</h4><ul>
+          <li>Fix the retargeting properly: import as Humanoid, enforce the T-pose, apply scale. Then use real motion: MoCap Online packs for the humanoid monsters, AccuRIG 2 or Auto-Rig Pro for rigs, Cascadeur for clean-up, and Unity's Animation Rigging for the non-humanoid ones.</li>
+          <li>Take one hero monster to full quality first: clean topology at 15k to 30k triangles, rebaked textures with the fake shadows removed.</li>
+          <li>In the trailer, show it backlit, in fog, in fast cuts.</li>
+          <li>Confirm every Tripo mesh was made on a paid plan.</li>
+        </ul></div>
+      </div>
+    </article>
+
+    <article class="plate" aria-labelledby="f5">
+      <div class="plate-head">
+        <span class="plate-no">05</span>
+        <div>
+          <h3 id="f5">Bought assets used raw, then dirtied all at once</h3>
+          <div class="chips"><span class="chip">Medium impact</span><span class="chip">Assets</span></div>
+        </div>
+      </div>
+      <div class="cols">
+        <div class="col"><h4>What I found</h4><ul>
+          <li>Five or more sellers, each with its own texture density and material style.</li>
+          <li>Pivots up to 1.1 m off, a chair stored at 100&times; scale that became a 50 m collision wall, black ceiling tiles, and broken collision meshes giving 350 navigation errors.</li>
+          <li>One global dirt layer at "Heavy" is trying to make it all match.</li>
+        </ul></div>
+        <div class="col"><h4>What the benchmarks do</h4><ul>
+          <li>ARC Raiders, Bodycam and Clair Obscur all use library or scanned assets, but restyle them by hand into one material language.</li>
+          <li>Dirt in good environments is local and tells a story: grime at wall bases, scuffs at doors, stains under leaks.</li>
+        </ul></div>
+        <div class="col fix"><h4>Fix</h4><ul>
+          <li>Add an import gate in code that checks scale, pivot, triangle budget and texture density before anything enters a scene.</li>
+          <li>Move props onto a small shared material set: one or two trim sheets and a few tiling materials.</li>
+          <li>Replace the global dirt multiplier with decals and masks placed where damage actually is.</li>
+        </ul></div>
+      </div>
+    </article>
+
+    <article class="plate" aria-labelledby="f6">
+      <div class="plate-head">
+        <span class="plate-no">06</span>
+        <div>
+          <h3 id="f6">A slow loop with too many AI hands and no human artist</h3>
+          <div class="chips"><span class="chip">Medium impact</span><span class="chip">Multiplies everything above</span></div>
+        </div>
+      </div>
+      <div class="cols">
+        <div class="col"><h4>What I found</h4><ul>
+          <li>77% of dev time is waiting. One map check takes 52.7 minutes.</li>
+          <li>Four AIs (Claude, Codex, Kimi, Gemini), with you copying prompts between them.</li>
+          <li>The monthly token cap was hit on 10-31. The 500 GB drive is filling with 116 GB of screenshots and 82 frozen copies.</li>
+          <li>Your friends' playtest feedback was set aside. There is no human artist anywhere in the pipeline.</li>
+        </ul></div>
+        <div class="col"><h4>What the benchmarks do</h4><ul>
+          <li>Every benchmark has at least one person who owns the look. Zeekerss made his own models and textures. Clair Obscur had four texture artists.</li>
+          <li>Content Warning and PEAK shipped in about a month by cutting scope, not by adding tools.</li>
+        </ul></div>
+        <div class="col fix"><h4>Fix</h4><ul>
+          <li>One builder (Claude Code) and one judge (you). Stop the multi-AI relay; every extra model adds its own taste and its own mistakes.</li>
+          <li>Polish a small beauty corner, not the whole map, so a check takes minutes instead of an hour.</li>
+          <li>Keep 3 frozen copies at most. Save review shots as JPG and delete them after review.</li>
+          <li>Put friends' feedback on a parked list instead of discarding it.</li>
+          <li>Hire one freelance environment artist for the trailer rooms.</li>
+        </ul></div>
+      </div>
+    </article>
+
+  </div>
+
+  <div class="callout">
+    <h3>A side note on شمقمق</h3>
+    <p>MIMESIS (Krafton's ReLU Games, October 2025) is a 4-player co-op horror game built around monsters that copy players' voices and behaviour, and it sold over 2 million copies. It is not a visual issue, but your trailer hook should lean on what MIMESIS doesn't have: Najdi humour, the meme monsters, and the 2012 Irqah story.</p>
+  </div>
+</section>
+
+<section id="missing" aria-labelledby="miss-h">
+  <div class="sec-head">
+    <span class="label">Section D</span>
+    <h2 id="miss-h">What's missing: tools and roles</h2>
+    <p>Prices are approximate 2026 figures from vendor pages and press. Check them before buying.</p>
+  </div>
+  <div class="table-frame" tabindex="0" role="region" aria-label="Tools and roles to add">
+    <table>
+      <thead><tr><th>Add</th><th>What it fixes</th><th>Cost</th></tr></thead>
+      <tbody>
+        <tr><td>Freelance environment artist<span class="sub">The biggest missing piece</span></td><td>Hand-dresses the 3 to 5 trailer rooms, builds 20 to 30 story prefabs from the assets you already own, and does a lighting and composition pass</td><td class="num">About $1.8k&ndash;9.6k (60&ndash;120 h at $30&ndash;80/h, estimate)</td></tr>
+        <tr><td>Unity baked lighting and Adaptive Probe Volumes</td><td>Bounce light, corner shadows and probe lighting for characters (finding 02)</td><td>Built in, free</td></tr>
+        <tr><td>Bakery GPU Lightmapper<span class="sub">Optional</span></td><td>Faster, cleaner bakes. Needs an Nvidia GPU on Windows</td><td>Paid, Unity Asset Store</td></tr>
+        <tr><td>Unity-URP-Volumetric-Light (CristianQiu)</td><td>Fog and visible flashlight beams, which URP lacks</td><td>Free</td></tr>
+        <tr><td>URP decals with a grime atlas</td><td>Local dirt instead of one global layer (finding 05)</td><td>Built in, free</td></tr>
+        <tr><td>Substance 3D Painter and Sampler</td><td>Re-texture props into one style, remove fake shadows from AI textures, turn photos of the real hospital into materials</td><td class="num">$24.99/month</td></tr>
+        <tr><td>Quad Remesher, or Blender QuadriFlow</td><td>Clean topology for AI meshes before rigging</td><td class="num">$109.90 one-time, or free</td></tr>
+        <tr><td>AccuRIG 2, Auto-Rig Pro</td><td>Proper rigs for humanoid and creature monsters</td><td class="num">Free, $50</td></tr>
+        <tr><td>MoCap Online packs, Move One, Cascadeur</td><td>Real motion instead of script-keyed cycles (finding 04)</td><td class="num">About $100 per pack, $18/month, about $99/year</td></tr>
+        <tr><td>Prefab Brush+, Polybrush</td><td>Fast hand set-dressing in the editor</td><td class="num">$7, free</td></tr>
+        <tr><td>Cinemachine 3, Timeline, Unity Recorder</td><td>Trailer camera moves and 4K capture at settings above the gameplay budget</td><td>Free</td></tr>
+        <tr><td>RealityScan</td><td>Scan real Saudi props and surfaces from your hospital photos and visits</td><td>Free under $1M revenue</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">Use less of: Meshy, Higgsfield and Tripo as final art for anything players see up close. Keep them for concepts, background filler and base meshes that a person finishes.</p>
+</section>
+
+<section id="plan" aria-labelledby="plan-h">
+  <div class="sec-head">
+    <span class="label">Section E</span>
+    <h2 id="plan-h">The next 4 weeks</h2>
+    <p>Aimed at your current goal, a stunning trailer map. The order matters: decide the look, light it, dress it, then add the monster and capture.</p>
+  </div>
+  <ol class="weeks">
+    <li><div class="wk">Week 1<span>Decide</span></div><div>
+      <h3>Lock the look and the shot list</h3>
+      <ul>
+        <li>One-page art bible and 8 reference frames from your real hospital photos.</li>
+        <li>A 60 to 75 second trailer shot list. It decides which 3 locations need finishing, for example the ER reception, one ward corridor and the nurses' station.</li>
+        <li>Decide to retire the PSX shaders.</li>
+      </ul>
+      <p class="done-when"><b>Done when</b>you can hold up 8 frames and say "every shot looks like this".</p>
+    </div></li>
+    <li><div class="wk">Week 2<span>Light</span></div><div>
+      <h3>Bake the map</h3>
+      <ul>
+        <li>Generate the map in the editor and save it as a scene. Bake lightmaps, probe volumes and reflection probes.</li>
+        <li>Mixed lamps, 3 to 6 live shadow lights, volumetric fog, and power-on and blackout scenarios.</li>
+        <li>Profile on the 1070 class target before and after.</li>
+      </ul>
+      <p class="done-when"><b>Done when</b>the empty corridor looks scary with no props in it.</p>
+    </div></li>
+    <li><div class="wk">Week 3<span>Dress</span></div><div>
+      <h3>Hand-dress the beauty corner</h3>
+      <ul>
+        <li>20 to 30 story prefabs, made by you or the freelancer.</li>
+        <li>Claude places them with wall-snap rules and checks in code.</li>
+        <li>Asset import gate, shared materials, grime decals.</li>
+      </ul>
+      <p class="done-when"><b>Done when</b>each of the 3 rooms answers "what happened here?" at a glance.</p>
+    </div></li>
+    <li><div class="wk">Week 4<span>Capture</span></div><div>
+      <h3>One hero monster, then the trailer</h3>
+      <ul>
+        <li>Take one monster to full quality: clean mesh, proper rig, real motion.</li>
+        <li>Add a "Trailer" quality level, record camera moves at 4K with Unity Recorder, and record a real 4-player session with voice.</li>
+        <li>Get the Steam capsule art made by a person from an in-engine render.</li>
+      </ul>
+      <p class="done-when"><b>Done when</b>a friend who has never seen the game watches 30 seconds and asks where to wishlist it.</p>
+    </div></li>
+  </ol>
+</section>
+
+<section id="risk" aria-labelledby="risk-h">
+  <div class="sec-head">
+    <span class="label">Section F</span>
+    <h2 id="risk-h">Steam and AI risk</h2>
+  </div>
+  <ul class="plain">
+    <li><strong>Disclosure.</strong> Since the January 2026 update, Steam only asks about AI content that players see, hear or interact with. Claude Code needs no disclosure. Tripo meshes and any AI textures do. Write it plainly and early, for example: "Monster base meshes generated with Tripo AI, then rigged and animated by the developer. Environment art is licensed, human-made assets."</li>
+    <li><strong>Tripo licence.</strong> Free-plan outputs are not licensed for commercial use. Confirm every mesh was made on a paid plan, or regenerate it.</li>
+    <li><strong>Fab.</strong> The Personal licence gives the same rights as Professional and covers a commercial Steam game, as long as you were under $100k revenue when you bought. Megascans taken through Fab can be used in Unity. Buy the remaining asset stages before any publisher advance, because advances count toward that limit.</li>
+    <li><strong>No AI in what players notice first.</strong> No AI 2D art (posters, Arabic signage, capsule art), no AI voices and no AI music.</li>
+    <li><strong>Placeholders.</strong> Audit for AI placeholders before every public build, demo or trailer capture. That is how Clair Obscur, Anno 117 and The Alters got caught.</li>
+    <li><strong>Awards and festivals.</strong> The Indie Game Awards and some festivals ban any generative AI at any stage. Check the rules before entering.</li>
+  </ul>
+</section>
+
+<details class="sources" id="sources">
+  <summary>Sources</summary>
+  <div class="src-groups">
+    <div><h3>AI-assisted benchmarks</h3><ul>
+      <li><a href="https://80.lv/articles/how-embark-studios-used-unreal-engine-to-create-arc-raiders">80.lv: how Embark built ARC Raiders</a></li>
+      <li><a href="https://www.pcgamesn.com/arc-raiders/ai-usage-following-success-embark-interview">PCGamesN: ARC Raiders AI use</a></li>
+      <li><a href="https://schedule.gdconf.com/session/learning-to-move-physics-based-enemy-locomotion-in-arc-raiders/917319">GDC 2026: physics-based enemy locomotion</a></li>
+      <li><a href="https://www.engadget.com/gaming/arc-raiders-replaced-some-of-its-ai-generated-voice-lines-with-professional-actors-184915627.html">Engadget: ARC Raiders re-records lines</a></li>
+      <li><a href="https://80.lv/articles/eurogamer-s-2-5-arc-raiders-review-splits-the-gaming-community/">80.lv: Eurogamer 2/5 review</a></li>
+      <li><a href="https://www.gematsu.com/2026/01/arc-raiders-sales-top-12-4-million">Gematsu: ARC Raiders 12.4M sold</a></li>
+      <li><a href="https://www.engadget.com/gaming/the-indie-game-awards-snatches-back-two-trophies-from-clair-obscur-over-its-use-of-generative-ai-164730842.html">Engadget: Indie Game Awards and Clair Obscur</a></li>
+      <li><a href="https://www.creativebloq.com/3d/video-game-design/using-unreal-engine-5-can-be-a-trap-says-the-dev-behind-clair-obscur-expedition-33">Creative Bloq: Clair Obscur on UE5 and stock assets</a></li>
+      <li><a href="https://schedule.gdconf.com/session/four-artists-use-substance-3d-to-texture-clair-obscur-expedition-33-presented-by-adobe/917358">GDC 2026: four artists texture Clair Obscur</a></li>
+      <li><a href="https://www.gamedeveloper.com/press-release/mimesis-surpasses-two-million-copies-sold-worldwide">Game Developer: MIMESIS 2M sold</a></li>
+      <li><a href="https://press.krafton.com/MIMESIS-SURPASSES-ONE-MILLION-COPIES-SOLD-WITHIN-50-DAYS-OF-EARLY-ACCE">Krafton: MIMESIS mechanic</a></li>
+      <li><a href="https://www.pcgamesn.com/where-winds-meet/reception-ai-chatbots">PCGamesN: Where Winds Meet AI NPCs</a></li>
+      <li><a href="https://gameinformer.com/2025/06/30/11bit-studios-responds-to-the-alters-generative-ai-controversy">Game Informer: The Alters</a></li>
+      <li><a href="https://www.videogameschronicle.com/news/ubisoft-says-ai-generated-art-in-anno-117-was-a-placeholder-which-slipped-through-our-review-process">VGC: Anno 117 placeholder</a></li>
+      <li><a href="https://www.notebookcheck.net/Steam-is-issuing-refunds-for-Call-of-Duty-Black-Ops-7-to-players-citing-egregious-AI-use.1171206.0.html">Notebookcheck: Black Ops 7 refunds</a></li>
+    </ul></div>
+    <div><h3>Genre hits</h3><ul>
+      <li><a href="https://80.lv/articles/how-to-achieve-lethal-company-s-graphics-with-unity-hdrp">80.lv: Lethal Company's graphics in HDRP</a></li>
+      <li><a href="https://github.com/Sligili/HDLethalCompany">HDLethalCompany mod (internal resolution)</a></li>
+      <li><a href="https://gamedeveloper.com/business/lethal-company-sold-an-estimated-10-million-copies">Game Developer: Lethal Company 10M estimate</a></li>
+      <li><a href="https://en.wikipedia.org/wiki/R.E.P.O.">Wikipedia: R.E.P.O.</a></li>
+      <li><a href="https://www.pcgamer.com/games/horror/lets-just-fail-quickly-this-time-semiwork-took-a-big-risk-on-repo-after-its-first-game-took-6-years-to-make-and-didnt-sell-very-well">PC Gamer: semiwork "fail quickly"</a></li>
+      <li><a href="https://landfall.se/content-warning-press-kit">Landfall: Content Warning press kit</a></li>
+      <li><a href="https://unity.com/blog/games-made-with-unity-june-2025-releases">Unity: PEAK</a></li>
+      <li><a href="https://www.notebookcheck.net/Steam-This-game-looks-like-trash-but-gets-Overwhelmingly-Positive-reviews.977584.0.html">Notebookcheck: Schedule I</a></li>
+      <li><a href="https://www.eurogamer.net/phasmophobia-studio-kinetic-moves-into-indie-publishing">Eurogamer: Kinetic publishing rules</a></li>
+      <li><a href="https://en.wikipedia.org/wiki/Bodycam_(video_game)">Wikipedia: Bodycam</a></li>
+    </ul></div>
+    <div><h3>Lighting and rendering</h3><ul>
+      <li><a href="https://docs.unity3d.com/6000.4/Documentation/Manual/Lightmapping.html">Unity 6.4 manual: lightmapping</a></li>
+      <li><a href="https://docs.unity3d.com/Manual/urp/probevolumes-concept.html">Unity manual: Adaptive Probe Volumes</a></li>
+      <li><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@17.0/manual/probevolumes-understand-changing-lighting-at-runtime.html">URP 17: lighting scenarios at runtime</a></li>
+      <li><a href="https://discussions.unity.com/t/baking-light-on-a-procedurally-generated-tilemap/600843">Unity forum: baking a generated level</a></li>
+      <li><a href="https://github.com/CristianQiu/Unity-URP-Volumetric-Light">CristianQiu: URP volumetric light</a></li>
+      <li><a href="https://unity.com/topics/render-pipelines-strategy-for-2026">Unity: render pipeline strategy 2026</a></li>
+      <li><a href="https://docs.unity3d.com/Manual/visual-effects-decals.html">Unity manual: decals</a></li>
+    </ul></div>
+    <div><h3>AI layout and judgment research</h3><ul>
+      <li><a href="https://lab-spell.github.io/SceneCritic/">SceneCritic</a></li>
+      <li><a href="https://arxiv.org/html/2412.02193v3">LayoutVLM</a></li>
+      <li><a href="https://ojs.aaai.org/index.php/AAAI/article/view/38452">Co-Layout (AAAI 2026)</a></li>
+      <li><a href="https://mlanthology.org/cvpr/2024/yang2024cvpr-holodeck">Holodeck (CVPR 2024)</a></li>
+      <li><a href="https://iclr.cc/virtual/2026/poster/10008229">SpatiaLab (ICLR 2026)</a></li>
+      <li><a href="https://arxiv.org/abs/2401.08276">AesBench</a></li>
+      <li><a href="https://gdcvault.com/play/1012647/What-Happened-Here-Environmental">GDC Vault: "What Happened Here?"</a></li>
+    </ul></div>
+    <div><h3>Characters and animation</h3><ul>
+      <li><a href="https://www.cgchannel.com/2025/07/rig-and-animate-3d-characters-for-free-with-accurig-2-0/">CG Channel: AccuRIG 2.0</a></li>
+      <li><a href="https://mocaponline.com/collections/horror-animations/products/zombie">MoCap Online: horror packs</a></li>
+      <li><a href="https://cascadeur.com/blog/general/cascadeurs-new-licensing-structure-comprehensive-faq">Cascadeur licensing</a></li>
+      <li><a href="https://unity.com/resources/procedural-poses-motion-animation-rigging">Unity: Animation Rigging</a></li>
+      <li><a href="https://www.tripo3d.ai/help/privacy-policy/how-to-use-tripo-models-commercially">Tripo: commercial use</a></li>
+      <li><a href="https://exoside.com/quadremesher/quadremesher-buy/">Quad Remesher pricing</a></li>
+      <li><a href="https://helpx.adobe.com/substance-3d/pricing-change.html">Adobe Substance 3D pricing</a></li>
+    </ul></div>
+    <div><h3>Steam, licensing and industry data</h3><ul>
+      <li><a href="https://www.pcgamer.com/software/ai/steam-updates-ai-disclosure-form-to-specify-that-its-focused-on-ai-generated-content-that-is-consumed-by-players-not-efficiency-tools-used-behind-the-scenes/">PC Gamer: Steam AI disclosure update</a></li>
+      <li><a href="https://gamedeveloper.com/business/valve-tweaks-and-clarifies-ai-disclosure-rules-for-steam">Game Developer: Valve clarifies AI rules</a></li>
+      <li><a href="https://www.tomshardware.com/video-games/pc-gaming/1-in-5-steam-games-released-in-2025-use-generative-ai-up-nearly-700-percent-year-on-year-7-818-titles-disclose-genai-asset-usage-7-percent-of-entire-steam-library">Tom's Hardware: AI disclosures on Steam</a></li>
+      <li><a href="https://forums.unrealengine.com/t/fab-license-terms-standard-license/2094243">Unreal forums: Fab Standard License</a></li>
+      <li><a href="https://www.unrealengine.com/en-US/blog/fab-epics-new-unified-content-marketplace-launches-today">Epic: Fab launch, any engine</a></li>
+      <li><a href="https://www.businesswire.com/news/home/20260129438528/en">GDC 2026 State of the Industry</a></li>
+      <li><a href="https://partner.steamgames.com/doc/store/assets/standard">Steamworks: store graphical assets</a></li>
+    </ul></div>
+  </div>
+</details>
+
+<footer>
+  <span>IH-AUD-01 &middot; Irqah Hospital quality audit</span>
+  <span>Research current to 5 November 2026</span>
+</footer>
+
+</div>
