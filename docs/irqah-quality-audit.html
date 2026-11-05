@@ -85,7 +85,7 @@ header.cover { display: grid; gap: var(--s-5); }
 }
 .stamp .big { display: block; font-size: var(--t-xl); }
 .stamp .small { display: block; font-family: var(--f-label); font-size: var(--t-xs); letter-spacing: 0.12em; }
-@media (max-width: 560px) { .verdict { grid-template-columns: 1fr; } .stamp { justify-self: start; } }
+@media (max-width: 560px) { .verdict { grid-template-columns: 1fr; } .stamp { justify-self: start; margin-left: 8px; } }
 
 .note { border-left: 3px solid var(--line); padding: var(--s-2) var(--s-4); color: var(--muted); font-size: var(--t-sm); max-width: 68ch; }
 [dir="rtl"] .note { border-left: 0; border-right: 3px solid var(--line); }
@@ -187,7 +187,7 @@ footer { font-size: var(--t-xs); color: var(--muted); border-top: 2px solid var(
     <p>Ateeq, the tools are not the main problem. Three things are. The game has no single locked look. The map is built by code at runtime, so its lighting can never be baked. And AI is doing the two jobs it is worst at: placing furniture and judging what looks good. The well-reviewed games on Steam that use AI keep art direction, hero assets and lighting in human hands, and use AI where players don't look closely.</p>
     <div class="stamp" aria-hidden="true"><span class="big" lang="ar">تم الفحص</span><span class="small">AUDITED</span></div>
   </div>
-  <p class="note">How this was made: I read your GDD on Drive, the Irqah design system, and the transcripts of your past Irqah sessions (main dev, asset packages, Higgsfield setup, branding, learning). Ten research agents covered released games, tools and studies, and a fact-check pass tested the key claims. I have not seen your screenshots or played a build, so findings about the look come from what the sessions recorded. Send me 5 to 10 current screenshots and I can add a frame-by-frame critique.</p>
+  <p class="note">How this was made: I read your GDD on Drive, the Irqah design system, and the transcripts of your past Irqah sessions (main dev, asset packages, Higgsfield setup, branding, learning). Eight research agents covered released games, tools and studies, and eight more fact-checked the key claims. I have not seen your screenshots or played a build, so findings about the look come from what the sessions recorded. Send me 5 to 10 current screenshots and I can add a frame-by-frame critique.</p>
   <nav class="index" aria-label="Sections">
     <a href="#now">Where the game is today</a>
     <a href="#benchmarks">Benchmarks</a>
@@ -229,8 +229,8 @@ footer { font-size: var(--t-xs); color: var(--muted); border-top: 2px solid var(
     <table>
       <thead><tr><th>Game</th><th>Reception</th><th>Team and engine</th><th>What AI did</th><th>What stayed human</th><th>Lesson for Irqah</th></tr></thead>
       <tbody>
-        <tr><td>ARC Raiders<span class="sub">Embark, Oct 2025. Extraction, your closest commercial match</span></td><td class="num">Very Positive, about 82&ndash;88% of 240k&ndash;430k reviews. 12.4M sold by Jan 2026</td><td>Large studio. Modified UE5 branch without Lumen or Nanite</td><td>Text-to-speech voices trained on contracted actors. Machine learning for robot movement</td><td>All visual art, built on photogrammetry and strong art direction</td><td>AI went where it doesn't touch the look. The AI voices still cost them: Eurogamer gave 2/5, and Embark re-recorded some lines with actors</td></tr>
-        <tr><td>Clair Obscur: Expedition 33<span class="sub">Sandfall, Apr 2025</span></td><td>Overwhelmingly Positive. 3.3M sold in 33 days</td><td>About 30 core staff. UE5</td><td>A few AI placeholder textures shipped at launch and were patched out</td><td>All final art. Four artists textured it in Substance. Free Epic assets reworked into the house style</td><td>Strong direction applied to reworked stock assets beats raw generation. The shipped placeholders cost it two Indie Game Awards</td></tr>
+        <tr><td>ARC Raiders<span class="sub">Embark, Oct 2025. Extraction, your closest commercial match</span></td><td class="num">Very Positive, about 82&ndash;88% of 240k&ndash;430k reviews. 12.4M sold by Jan 2026</td><td>Large studio. Custom NVIDIA branch of UE5, with RTXGI instead of Lumen</td><td>Text-to-speech voices trained on contracted actors. Machine learning for robot movement</td><td>All visual art, built on photogrammetry and strong art direction</td><td>AI went where it doesn't touch the look. The AI voices still cost them: Eurogamer gave 2/5, and Embark re-recorded some lines with actors</td></tr>
+        <tr><td>Clair Obscur: Expedition 33<span class="sub">Sandfall, Apr 2025</span></td><td>Overwhelmingly Positive. 3.3M sold in 33 days</td><td>About 30 core staff. UE5</td><td>A few AI placeholder textures shipped at launch and were patched out</td><td>All final art. Four artists textured it in Substance. Free Epic assets reworked into the house style</td><td>Strong direction applied to reworked stock assets beats raw generation. Admitting AI use in production, including those placeholders, cost it two Indie Game Awards</td></tr>
         <tr><td>MIMESIS<span class="sub">ReLU Games / Krafton, Oct 2025. 4-player co-op horror</span></td><td>Very Positive, about 84%. 2M+ sold</td><td>Krafton's deep-learning studio</td><td>The core mechanic: monsters that copy players' voices and behaviour</td><td>Not documented</td><td>AI as the gameplay hook sells in your genre. It also overlaps with your شمقمق idea (see the note under the findings)</td></tr>
         <tr><td>Where Winds Meet<span class="sub">Everstone / NetEase, Nov 2025</span></td><td>Very Positive at launch</td><td>About 100 people. In-house engine</td><td>Labeled AI chatbot NPCs in side interactions</td><td>The whole world and its art</td><td>Labeled AI in side systems was accepted, but divisive</td></tr>
         <tr><td>The Alters<span class="sub">11 bit studios, Jun 2025</span></td><td>Very Positive, about 90%</td><td>UE5</td><td>AI placeholder background text and AI subtitle translations, not disclosed</td><td>Everything else</td><td>The studio had to apologize. Disclose AI use, and replace placeholders before launch</td></tr>
@@ -259,7 +259,7 @@ footer { font-size: var(--t-xs); color: var(--muted); border-top: 2px solid var(
     <h2 style="font-size:var(--t-lg)">What the good ones have in common</h2>
   </div>
   <ol class="patterns">
-    <li><p><strong>Hero visuals are made by people.</strong> AI sits where players don't look closely (ARC Raiders' robot movement) or AI is the mechanic itself (MIMESIS). None of them ships AI meshes as the face of the game.</p></li>
+    <li><p><strong>Hero visuals are made by people.</strong> AI sits where players don't look closely (ARC Raiders' robot movement) or AI is the mechanic itself (MIMESIS). None of these games puts AI meshes front and centre.</p></li>
     <li><p><strong>One consistent style beats asset detail.</strong> Lethal Company's low resolution, Schedule I's low poly and Clair Obscur's art direction all win because one look is applied to everything.</p></li>
     <li><p><strong>The shortcut that works is library or scanned assets restyled by hand.</strong> ARC Raiders used photogrammetry, Bodycam used Megascans, and Clair Obscur reworked free Epic models.</p></li>
     <li><p><strong>Visible AI art is punished.</strong> The worst reactions came from AI 2D art, AI voices, and AI placeholders that shipped by accident. Invisible AI (code, movement, tools) drew almost none.</p></li>
@@ -385,7 +385,7 @@ footer { font-size: var(--t-xs); color: var(--muted); border-top: 2px solid var(
           <li>Fix the retargeting properly: import as Humanoid, enforce the T-pose, apply scale. Then use real motion: MoCap Online packs for the humanoid monsters, AccuRIG 2 or Auto-Rig Pro for rigs, Cascadeur for clean-up, and Unity's Animation Rigging for the non-humanoid ones.</li>
           <li>Take one hero monster to full quality first: clean topology at 15k to 30k triangles, rebaked textures with the fake shadows removed.</li>
           <li>In the trailer, show it backlit, in fog, in fast cuts.</li>
-          <li>Confirm every Tripo mesh was made on a paid plan.</li>
+          <li>Confirm every Tripo mesh was made on a paid plan (see Section F).</li>
         </ul></div>
       </div>
     </article>
@@ -449,7 +449,7 @@ footer { font-size: var(--t-xs); color: var(--muted); border-top: 2px solid var(
 
   <div class="callout">
     <h3>A side note on شمقمق</h3>
-    <p>MIMESIS (Krafton's ReLU Games, October 2025) is a 4-player co-op horror game built around monsters that copy players' voices and behaviour, and it sold over 2 million copies. It is not a visual issue, but your trailer hook should lean on what MIMESIS doesn't have: Najdi humour, the meme monsters, and the 2012 Irqah story.</p>
+    <p>MIMESIS (Krafton's ReLU Games, October 2025) is a 4-player co-op horror game whose monsters copy players' voices and behaviour by replaying things they said earlier, and it has sold over 2 million copies. CORDURA (announced June 2026) also uses proximity chat to imitate teammates. This doesn't affect the visuals, but it affects your trailer hook. Lead with what those games don't have: Najdi humour, the meme monsters and the 2012 Irqah story.</p>
   </div>
 </section>
 
@@ -534,8 +534,8 @@ footer { font-size: var(--t-xs); color: var(--muted); border-top: 2px solid var(
   </div>
   <ul class="plain">
     <li><strong>Disclosure.</strong> Since the January 2026 update, Steam only asks about AI content that players see, hear or interact with. Claude Code needs no disclosure. Tripo meshes and any AI textures do. Write it plainly and early, for example: "Monster base meshes generated with Tripo AI, then rigged and animated by the developer. Environment art is licensed, human-made assets."</li>
-    <li><strong>Tripo licence.</strong> Free-plan outputs are not licensed for commercial use. Confirm every mesh was made on a paid plan, or regenerate it.</li>
-    <li><strong>Fab.</strong> The Personal licence gives the same rights as Professional and covers a commercial Steam game, as long as you were under $100k revenue when you bought. Megascans taken through Fab can be used in Unity. Buy the remaining asset stages before any publisher advance, because advances count toward that limit.</li>
+    <li><strong>Tripo licence.</strong> Tripo's terms say it keeps the rights to free-plan outputs, and commercial rights come with a paid plan. Its own pages contradict each other on this, so don't rely on the free tier. Confirm every mesh was made on a paid plan, or regenerate it.</li>
+    <li><strong>Fab.</strong> The Personal licence gives the same rights as Professional and covers a commercial Steam game, as long as you were under $100k revenue when you bought. Megascans taken through Fab can be used in Unity. Old Megascans claimed through Quixel Bridge before Fab are limited to Unreal, so check that each one shows the Fab Standard License in your library. Buy the remaining asset stages before any publisher advance, because advances count toward that limit.</li>
     <li><strong>No AI in what players notice first.</strong> No AI 2D art (posters, Arabic signage, capsule art), no AI voices and no AI music.</li>
     <li><strong>Placeholders.</strong> Audit for AI placeholders before every public build, demo or trailer capture. That is how Clair Obscur, Anno 117 and The Alters got caught.</li>
     <li><strong>Awards and festivals.</strong> The Indie Game Awards and some festivals ban any generative AI at any stage. Check the rules before entering.</li>
@@ -557,6 +557,7 @@ footer { font-size: var(--t-xs); color: var(--muted); border-top: 2px solid var(
       <li><a href="https://schedule.gdconf.com/session/four-artists-use-substance-3d-to-texture-clair-obscur-expedition-33-presented-by-adobe/917358">GDC 2026: four artists texture Clair Obscur</a></li>
       <li><a href="https://www.gamedeveloper.com/press-release/mimesis-surpasses-two-million-copies-sold-worldwide">Game Developer: MIMESIS 2M sold</a></li>
       <li><a href="https://press.krafton.com/MIMESIS-SURPASSES-ONE-MILLION-COPIES-SOLD-WITHIN-50-DAYS-OF-EARLY-ACCE">Krafton: MIMESIS mechanic</a></li>
+      <li><a href="https://www.levelup.com/en/news/coming-to-ps5-and-pc-cordura-a-horror-game-that-listens-to-your-voice-chat-and-uses-it-against-you/">LevelUp: CORDURA voice mimic</a></li>
       <li><a href="https://www.pcgamesn.com/where-winds-meet/reception-ai-chatbots">PCGamesN: Where Winds Meet AI NPCs</a></li>
       <li><a href="https://gameinformer.com/2025/06/30/11bit-studios-responds-to-the-alters-generative-ai-controversy">Game Informer: The Alters</a></li>
       <li><a href="https://www.videogameschronicle.com/news/ubisoft-says-ai-generated-art-in-anno-117-was-a-placeholder-which-slipped-through-our-review-process">VGC: Anno 117 placeholder</a></li>
